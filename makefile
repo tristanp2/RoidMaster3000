@@ -1,6 +1,5 @@
 CC=g++
 CFLAGS=-Wall
-CC1=echo
 
 all:	
 
