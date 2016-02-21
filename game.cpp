@@ -123,7 +123,7 @@ public:
             Vector2d pos(x,y);
             Vector2d end_point(300,rand()%400+100); //Get some random point from center x of screen so that the asteroids
                                                     //to set up vector for asteroid direction
-            Vector2d dir = pos - end_point;
+            Vector2d dir = end_point - pos;
             dir=dir.unit_vector();
             cout<<"spawning object at: "<<pos<<" going toward "<<end_point<<endl<<"vel: "<<rv*dir<<endl;
             obj=GameObject(enum_asteroid,asteroid,rand()%3 + 1,pos,true,rv*dir,0,rand()%180 - 360,0,false);
