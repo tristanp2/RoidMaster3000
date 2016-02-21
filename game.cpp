@@ -28,8 +28,8 @@ public:
         object_list.front().set_center(14,8);
         object_list.front().make_hitbox(3);
         player=&(object_list.front());
-        ast = GameObject(enum_asteroid,asteroid,3,Vector2d(100,300),true,Vector2d(0,0),0,360,0,false);
-        object_list.push_back(ast);
+//        ast = GameObject(enum_asteroid,asteroid,3,Vector2d(100,300),true,Vector2d(0,0),0,360,0,false);
+//        object_list.push_back(ast);
     }
     ~GameCanvas(){
         object_list.clear(); 
@@ -68,7 +68,7 @@ public:
             }
             delete_objects();
             check_collisions();
-           // delta_spawn=spawn_objects(delta_spawn);
+            delta_spawn=spawn_objects(delta_spawn);
             SDL_Event e;
             while(SDL_PollEvent(&e)){
                 switch(e.type){
@@ -107,7 +107,7 @@ public:
     //Delete the objects that have gone out of the screen
     void delete_objects(){
         for(list<GameObject>::iterator it=object_list.begin(); it!=object_list.end(); ++it){
-            if((*it).type!=enum_player and ((*it).pos.x<-100 or (*it).pos.y<-100 or (*it).pos.x>CANVAS_WIDTH + 100 or (*it).pos.y>CANVAS_HEIGHT + 100)){
+            if((*it).type!=enum_player and ((*it).pos.x<-150 or (*it).pos.y<-150 or (*it).pos.x>CANVAS_WIDTH + 150 or (*it).pos.y>CANVAS_HEIGHT + 150)){
                (*it).free_mem();
                it=object_list.erase(it);
             }
@@ -118,14 +118,15 @@ public:
             GameObject obj;
             int rv=rand()%40;
             int sidex=rand()%2;
-            int sidey=rand()%6;
-            int x=-100*sidex + 900*abs(sidex-1);
-            int y=100*sidey;
+            int x=-100*sidex + 900*abs(sidex-1); //x coord for asteroid spawn. either spawns at -100 or +900 (100 pixels outside of the screen)
+            int y=rand()%600;   //y coord for asteroid spawn
             Vector2d pos(x,y);
-            Vector2d end_point(300,rand()%600+100);
+            Vector2d end_point(300,rand()%400+100); //Get some random point from center x of screen so that the asteroids
+                                                    //to set up vector for asteroid direction
             Vector2d dir = pos - end_point;
             dir=dir.unit_vector();
-            obj=GameObject(enum_asteroid,asteroid,rand()%3 + 1,pos,true,rv*dir,0,rand()%81 - 40,0,false);
+            cout<<"spawning object at: "<<pos<<" going toward "<<end_point<<endl<<"vel: "<<rv*dir<<endl;
+            obj=GameObject(enum_asteroid,asteroid,rand()%3 + 1,pos,true,rv*dir,0,rand()%180 - 360,0,false);
             object_list.push_back(obj);
             respawn = 1000 + rand()%4000; //Spawn every 1-5 seconds
             return 0;
@@ -165,7 +166,7 @@ public:
             }
             num_objects = obj2.scale + obj1.scale - 1;
         }        
-        else if(obj1.type==enum_bullet or obj2.type==enum_bullet){ //At the moment it is impossible for two bullets to collide
+        else if(obj1.type==enum_bullet or obj2.type==enum_bullet){ //At the moment it should be impossible for two bullets to collide
             GameObject other;
             if(obj1.type==enum_bullet){
                 other=obj2;
@@ -195,7 +196,7 @@ private:
     int respawn;
     bool firing;
     int refire;
-    static const int fire_rate=100;    //ms/bullet
+    static const int fire_rate=200;    //ms/bullet
     void handle_key_down(SDL_Keycode key){
         if(key == SDLK_RIGHT){
             player->raccel=360;
