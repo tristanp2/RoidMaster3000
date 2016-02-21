@@ -46,6 +46,9 @@ public:
         player_surf = new Sprite("./resources/spaceship.bmp", 2, 3, 1);
         bullet = new Sprite("./resources/bullet.bmp", 1,6,1);
     }
+    void show_menu(SDL_Renderer* r, SDL_Window* window){
+
+    }
     void frame_loop(SDL_Renderer* r, SDL_Window* window){
         refire=0;
         respawn=1000;
@@ -250,6 +253,19 @@ int main(){
     SDL_RenderPresent(renderer);
     
     GameCanvas canvas;
-    canvas.frame_loop(renderer, window);
+    GameState state=enum_menu;
+    while(1){
+        switch(state){
+            case enum_menu:
+                canvas.show_menu(renderer,window);
+                break;
+            case enum_play:
+                canvas.frame_loop(renderer, window);
+                break;
+            default:
+                break;
+        }
+    }
+
     return 0;
 }

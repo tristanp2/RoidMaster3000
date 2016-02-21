@@ -8,5 +8,8 @@ enum ObjectType{
     enum_bullet,
     enum_misc
 };
-
+enum GameState{
+    enum_menu,
+    enum_play
+};
 #endif
