@@ -23,6 +23,7 @@ public:
     list<GameObject> object_list;
     Sprite *alien, *asteroid, *player_surf, *bullet;
     GameCanvas(){
+        srand(time(NULL));
         load_resources();
         object_list.push_back(GameObject(enum_player, player_surf, 2, Vector2d(400,300), false, Vector2d(0,0), 180,0, 60, true));
         object_list.front().set_center(14,8);
