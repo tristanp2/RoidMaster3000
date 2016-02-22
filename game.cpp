@@ -21,16 +21,10 @@ public:
     static const int CANVAS_HEIGHT=600;
     GameObject *player,ast;
     list<GameObject> object_list;
-    Sprite *alien, *asteroid, *player_surf, *bullet;
+    Sprite *alien, *asteroid, *player_surf, *bullet, *start, *quit;
     GameCanvas(){
         srand(time(NULL));
         load_resources();
-        object_list.push_back(GameObject(enum_player, player_surf, 2, Vector2d(400,300), false, Vector2d(0,0), 180,0, 60, true));
-        object_list.front().set_center(14,8);
-        object_list.front().make_hitbox(3);
-        player=&(object_list.front());
-//        ast = GameObject(enum_asteroid,asteroid,3,Vector2d(100,300),true,Vector2d(0,0),0,360,0,false);
-//        object_list.push_back(ast);
     }
     ~GameCanvas(){
         object_list.clear(); 
@@ -44,12 +38,65 @@ public:
         alien = new Sprite("./resources/alien.bmp", 2, 3, 1);
         asteroid = new Sprite("./resources/asteroid.bmp", 0,1,1);
         player_surf = new Sprite("./resources/spaceship.bmp", 2, 3, 1);
-        bullet = new Sprite("./resources/bullet.bmp", 1,6,1);
+        bullet = new Sprite("./resources/bullet.bmp", 5,6,1);
+        start = new Sprite("./resources/startbutton.bmp", 1,2,1);
+        quit = new Sprite("./resources/quitbutton.bmp", 1,2,1);
     }
-    void show_menu(SDL_Renderer* r, SDL_Window* window){
+    GameState show_menu(SDL_Renderer* r, SDL_Window* window){
+        GameObject* button[2];
+        object_list.push_back(GameObject(enum_misc, start, 2, Vector2d(400,300), false, Vector2d(0,0), 0,0,0, false));
+        button[0] = &(object_list.front());
+        object_list.push_back(GameObject(enum_misc, quit, 2, Vector2d(400,400), false, Vector2d(0,0), 0,0,0, false));
+        button[1] = &(object_list.back());
+        int index = 0;
 
+        while(1){
+            draw_objects(r,window);
+            button[index]->set_frame(1);
+            button[(index+1)%2]->set_frame(0);
+            SDL_Event e;
+            while(SDL_PollEvent(&e)){
+                SDL_Keycode key = e.key.keysym.sym;
+                switch(e.type){
+                    case(SDL_QUIT):
+                        return enum_quit;
+                    case(SDL_KEYDOWN):
+                        if(key == SDLK_RETURN){
+                            if(index==0){
+                                object_list.clear();
+                                return enum_play;
+                            }
+                            else{
+                                return enum_quit;
+                            }
+                        }
+                        if(key == SDLK_DOWN){
+                            index = abs(index + 1);
+                        }
+                        else if(key == SDLK_UP){
+                            index = abs(index - 1);
+                        }
+                        index %= 2;
+                        break;
+                    case(SDL_KEYUP):
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        
     }
-    void frame_loop(SDL_Renderer* r, SDL_Window* window){
+    void init_game(){
+        object_list.push_back(GameObject(enum_player, player_surf, 2, Vector2d(400,300), false, Vector2d(0,0), 180,0, 60, true));
+        object_list.front().set_center(14,8);
+        object_list.front().make_hitbox(3);
+        player=&(object_list.front());
+//        ast = GameObject(enum_asteroid,asteroid,3,Vector2d(100,300),true,Vector2d(0,0),0,360,0,false);
+//        object_list.push_back(ast);
+    }
+    GameState frame_loop(SDL_Renderer* r, SDL_Window* window){
+        init_game();
         refire=0;
         respawn=1000;
         firing=false;
@@ -77,7 +124,7 @@ public:
             while(SDL_PollEvent(&e)){
                 switch(e.type){
                     case(SDL_QUIT):
-                        return;
+                        return enum_quit;
                     case(SDL_KEYDOWN):
                         handle_key_down(e.key.keysym.sym);
                         break;
@@ -256,13 +303,17 @@ int main(){
     GameState state=enum_menu;
     while(1){
         switch(state){
-            case enum_menu:
-                canvas.show_menu(renderer,window);
-                break;
+            case enum_quit:
+                return 0;
             case enum_play:
+                SDL_RenderClear(renderer);
+                SDL_RenderPresent(renderer);
                 canvas.frame_loop(renderer, window);
                 break;
             default:
+                SDL_RenderClear(renderer);
+                SDL_RenderPresent(renderer);
+                state=canvas.show_menu(renderer,window);
                 break;
         }
     }
