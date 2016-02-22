@@ -22,7 +22,8 @@ public:
     static const int CANVAS_HEIGHT=600;
     GameObject *player,ast;
     list<GameObject> object_list;
-    Sprite *alien, *asteroid, *player_surf, *bullet, *start, *quit;
+    list<Effect> effect_list;
+    Sprite *alien, *asteroid, *player_surf, *bullet, *start, *quit, *explosion;
     GameCanvas(){
         srand(time(NULL));
         load_resources();
@@ -42,7 +43,9 @@ public:
         bullet = new Sprite("./resources/bullet.bmp", 5,6,1);
         start = new Sprite("./resources/startbutton.bmp", 1,2,1);
         quit = new Sprite("./resources/quitbutton.bmp", 1,2,1);
+        explosion = new Sprite("./resources/explosion.bmp", 6,7,1);
     }
+
     GameState show_menu(SDL_Renderer* r, SDL_Window* window){
         GameObject* button[2];
         object_list.push_back(GameObject(enum_misc, start, 2, Vector2d(400,300), false, Vector2d(0,0), 0,0,0, false));
@@ -133,9 +136,11 @@ public:
                     case(SDL_QUIT):
                         return enum_quit;
                     case(SDL_KEYDOWN):
+                        if(dead) break; //ignore keys while death explosion is playing
                         handle_key_down(e.key.keysym.sym);
                         break;
                     case(SDL_KEYUP):
+                        if(dead) break;
                         handle_key_up(e.key.keysym.sym);
                         break;
                     default:
@@ -153,8 +158,13 @@ public:
         for(; it!=object_list.end(); ++it){
             (*it).draw(r, w);
         }
-        it=object_list.begin();
-        (*it).draw(r, w);
+        if(!dead){
+            it=object_list.begin();
+            (*it).draw(r, w);
+        }
+        for(list<Effect>::iterator e_it=effect_list.begin(); e_it!=effect_list.end(); ++e_it){
+            (*e_it).draw(r, w);
+        }
         SDL_RenderPresent(r);
     }
     void update_objects(int delta_ms){
@@ -237,8 +247,11 @@ public:
             old_pos = other.pos;
         }
         else if(obj1.type == enum_player or obj2.type == enum_player){
-            if(obj1.type != enum_bullet and obj2.type!=enum_bullet) //bullets spawn in the player's hitbox
+            if(obj1.type != enum_bullet and obj2.type!=enum_bullet){ //bullets spawn in the player's hitbox
+                effect_list.push_back(Effect(explosion, 100, false, 2, player->pos));
+                object_list.erase(object_list.begin());
                 dead = true;
+            }
             return;
         }            
 
