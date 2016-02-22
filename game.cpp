@@ -128,7 +128,7 @@ public:
                 frame_t=0;
             }
             delete_objects();
-            check_collisions();
+            if(!dead)   check_collisions();
             delta_spawn=spawn_objects(delta_spawn);
             SDL_Event e;
             while(SDL_PollEvent(&e)){
