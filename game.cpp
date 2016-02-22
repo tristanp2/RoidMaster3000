@@ -6,7 +6,6 @@
 
 #include "vector2d.h"
 #include "enumeration.h"
-#include "colourRGB.h"
 #include "gameobject.h"
 #include "sprite.h"
 
