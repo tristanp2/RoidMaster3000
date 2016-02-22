@@ -106,10 +106,10 @@ public:
     void draw(SDL_Renderer* r, SDL_Window* window){
         SDL_BlitScaled((*sprite)[current_frame],NULL,scale_surf,NULL); 
 
-        SDL_Texture* sprite=SDL_CreateTextureFromSurface(r, scale_surf);
-        SDL_RenderCopyEx(r, sprite, NULL, &draw_rect, rotation, center, SDL_FLIP_NONE);
+        SDL_Texture* tex=SDL_CreateTextureFromSurface(r, scale_surf);
+        SDL_RenderCopyEx(r, tex, NULL, &draw_rect, rotation, center, SDL_FLIP_NONE);
 
-        SDL_DestroyTexture(sprite);
+        SDL_DestroyTexture(tex);
         SDL_FillRect(scale_surf,NULL,SDL_MapRGB(scale_surf->format,0,0xff,0xa1)); 
     }
     void update(int delta_ms){

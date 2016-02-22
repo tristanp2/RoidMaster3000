@@ -8,11 +8,13 @@
 #include "enumeration.h"
 #include "gameobject.h"
 #include "sprite.h"
+#include "effect.h"
 
 using namespace std;
 
 static const int WINDOW_WIDTH=800;
 static const int WINDOW_HEIGHT=600;
+Vector2d DEATH_COORDS;
 
 class GameCanvas{
 public:
