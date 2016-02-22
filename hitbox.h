@@ -52,7 +52,6 @@ public:
         //It was found here: 
         //      www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
         bool c=false;
-        //cout<<p.x<<","<<p.y<<endl;
         for(int i=0, j=num_points-1; i < num_points; j=i++){
             if(((point[i].y>p.y) != (point[j].y>p.y)) and 
                     (p.x<(point[j].x-point[i].x)*(p.y-point[i].y)/
@@ -60,21 +59,6 @@ public:
                 c = !c;
         }
         return c;
-        /*p.x -= draw_center.x;
-        p.y -= draw_center.y;
-        int cross;
-        SDL_Point line;
-        cout<<"------------------\n";
-        for(int i=1;i<num_points;i++){
-            line.x = rot_point[i].x - rot_point[i-1].x;
-            line.y = rot_point[i].y - rot_point[i-1].y;
-            cout<<"comparing point: "<<p.x<<","<<p.y<<" to line "<<line.x<<","<<line.y<<endl;
-            cross = line.x*p.y - line.y*p.x;
-            cout<<"cross "<<cross<<endl;
-            if(cross<0){
-                cout<<"------------------\n\n";
-                return false;
-            }*/
     }
     void update(int rotation, int x, int y){
         if(rotation != current_rotation)    do_rotation(rotation);

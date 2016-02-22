@@ -53,6 +53,7 @@ public:
         object_list.push_back(GameObject(enum_misc, quit, 2, Vector2d(400,400), false, Vector2d(0,0), 0,0,0, false));
         button[1] = &(object_list.back());
         int index = 0;
+        cout<<"size: "<<object_list.size()<<endl;
 
         while(1){
             draw_objects(r,window);
@@ -198,7 +199,6 @@ public:
                                                     //to set up vector for asteroid direction
             Vector2d dir = end_point - pos;
             dir=dir.unit_vector();
-            cout<<"spawning object at: "<<pos<<" going toward "<<end_point<<endl<<"vel: "<<rv*dir<<endl;
             obj=GameObject(enum_asteroid,asteroid,rand()%3 + 1,pos,true,rv*dir,0,rand()%180 - 360,0,false);
             object_list.push_back(obj);
             respawn = 1000 + rand()%4000; //Spawn every 1-5 seconds
@@ -214,7 +214,6 @@ public:
             ++it2;
             for(;it2!=object_list.end(); ++it2){
                 if((*it1).is_collided(*it2)){
-                    cout<<"collision between "<<(*it1).type<<" and "<<(*it2).type<<endl;
                     handle_collision(*it1,*it2);
                     (*it1).free_mem();
                     (*it2).free_mem();
