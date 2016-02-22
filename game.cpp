@@ -172,6 +172,9 @@ public:
         for(list<GameObject>::iterator it=object_list.begin(); it!=object_list.end(); ++it){
             (*it).update(delta_ms);
         }
+        for(list<Effect>::iterator it=effect_list.begin(); it!=effect_list.end(); ++it){
+            (*it).update(delta_ms);
+        }
     }
     //Delete the objects that have gone out of the screen
     void delete_objects(){
@@ -249,8 +252,8 @@ public:
         }
         else if(obj1.type == enum_player or obj2.type == enum_player){
             if(obj1.type != enum_bullet and obj2.type!=enum_bullet){ //bullets spawn in the player's hitbox
-                effect_list.push_back(Effect(explosion, 100, false, 2, player->pos));
-                if(player == &object_list.front())  object_list.erase(object_list.begin());
+                effect_list.push_back(Effect(explosion, 100, false, 3, player->pos));
+               // if(player == &object_list.front())  object_list.erase(object_list.begin());
                 dead = true;
             }
             return;
