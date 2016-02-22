@@ -173,7 +173,7 @@ public:
     int spawn_objects(int dt){
         if(dt>respawn){
             GameObject obj;
-            int rv=rand()%40;
+            int rv=rand()%60+20;
             int sidex=rand()%2;
             int x=-100*sidex + 900*abs(sidex-1); //x coord for asteroid spawn. either spawns at -100 or +900 (100 pixels outside of the screen)
             int y=rand()%600;   //y coord for asteroid spawn
