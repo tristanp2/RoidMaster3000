@@ -115,6 +115,7 @@ public:
       //      cout<<"\t"<<object_list.size()<<endl;
             if(dead and effect_list.front().done){
                 object_list.clear();
+                effect_list.clear();
                 return enum_dead;
             }
             cout<<dead<<endl;
