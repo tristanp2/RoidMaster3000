@@ -88,6 +88,7 @@ public:
         
     }
     void init_game(){
+        object_list.clear();
         object_list.push_back(GameObject(enum_player, player_surf, 2, Vector2d(400,300), false, Vector2d(0,0), 180,0, 60, true));
         object_list.front().set_center(14,8);
         object_list.front().make_hitbox(3);
@@ -108,7 +109,10 @@ public:
             unsigned int current_frame=SDL_GetTicks();
             unsigned int delta_t=current_frame - last_frame;
       //      cout<<"\t"<<object_list.size()<<endl;
-            if(dead) return enum_dead;
+            if(dead){
+                object_list.clear();
+                return enum_dead;
+            }
             refire+=delta_t;
             delta_spawn+=delta_t;
             frame_t+=delta_t;
