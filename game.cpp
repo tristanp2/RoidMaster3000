@@ -119,7 +119,7 @@ public:
                 effect_list.clear();
                 return enum_dead;
             }
-            cout<<dead<<endl;
+            //cout<<dead<<endl;
             refire+=delta_t;
             delta_spawn+=delta_t;
             frame_t+=delta_t;
