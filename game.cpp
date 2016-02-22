@@ -113,7 +113,7 @@ public:
             unsigned int current_frame=SDL_GetTicks();
             unsigned int delta_t=current_frame - last_frame;
       //      cout<<"\t"<<object_list.size()<<endl;
-            if(dead){
+            if(dead and effect_list.front().done){
                 object_list.clear();
                 return enum_dead;
             }
