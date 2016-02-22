@@ -117,6 +117,7 @@ public:
                 object_list.clear();
                 return enum_dead;
             }
+            cout<<dead<<endl;
             refire+=delta_t;
             delta_spawn+=delta_t;
             frame_t+=delta_t;
@@ -128,7 +129,7 @@ public:
                 frame_t=0;
             }
             delete_objects();
-            if(!dead)   check_collisions();
+            if(!dead)  check_collisions();
             delta_spawn=spawn_objects(delta_spawn);
             SDL_Event e;
             while(SDL_PollEvent(&e)){
