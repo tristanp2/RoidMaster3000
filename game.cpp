@@ -117,6 +117,7 @@ public:
             if(dead and effect_list.front().done){
                 object_list.clear();
                 effect_list.clear();
+                dead = false;
                 return enum_dead;
             }
             //cout<<dead<<endl;
