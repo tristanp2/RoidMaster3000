@@ -11,6 +11,7 @@ enum ObjectType{
 enum GameState{
     enum_menu,
     enum_play,
+    enum_dead,
     enum_quit
 };
 #endif

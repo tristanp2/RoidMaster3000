@@ -92,6 +92,7 @@ public:
         object_list.front().set_center(14,8);
         object_list.front().make_hitbox(3);
         player=&(object_list.front());
+        dead = false;
 //        ast = GameObject(enum_asteroid,asteroid,3,Vector2d(100,300),true,Vector2d(0,0),0,360,0,false);
 //        object_list.push_back(ast);
     }
@@ -107,6 +108,7 @@ public:
             unsigned int current_frame=SDL_GetTicks();
             unsigned int delta_t=current_frame - last_frame;
       //      cout<<"\t"<<object_list.size()<<endl;
+            if(dead) return enum_dead;
             refire+=delta_t;
             delta_spawn+=delta_t;
             frame_t+=delta_t;
@@ -191,7 +193,7 @@ public:
             it2=it1;
             ++it2;
             for(;it2!=object_list.end(); ++it2){
-                if((*it1).is_collided(*it2) and (*it1).type!=enum_player and (*it2).type!=enum_player){
+                if((*it1).is_collided(*it2)){
                     cout<<"collision between "<<(*it1).type<<" and "<<(*it2).type<<endl;
                     handle_collision(*it1,*it2);
                     (*it1).free_mem();
@@ -229,6 +231,11 @@ public:
             num_objects = new_scale + 1;
             old_pos = other.pos;
         }
+        else if(obj1.type == enum_player or obj2.type == enum_player){
+            if(obj1.type != enum_bullet and obj2.type!=enum_bullet) //bullets spawn in the player's hitbox
+                dead = true;
+            return;
+        }            
 
         GameObject new_obj;
         Vector2d new_dir, new_pos;
@@ -245,7 +252,7 @@ public:
         
 private:
     int respawn;
-    bool firing;
+    bool firing,dead;
     int refire;
     static const int fire_rate=200;    //ms/bullet
     void handle_key_down(SDL_Keycode key){
@@ -308,8 +315,9 @@ int main(){
             case enum_play:
                 SDL_RenderClear(renderer);
                 SDL_RenderPresent(renderer);
-                canvas.frame_loop(renderer, window);
+                state=canvas.frame_loop(renderer, window);
                 break;
+            case enum_dead:
             default:
                 SDL_RenderClear(renderer);
                 SDL_RenderPresent(renderer);
