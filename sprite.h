@@ -78,7 +78,7 @@ public:
 
         SDL_FillRect(frame_surf,NULL,SDL_MapRGB(frame_surf->format,0,0xff,0xa1)); 
         if(frame > max_frame){
-            cout<<"invalid frame"<<endl;
+            cout<<"invalid frame chosen for: "<<file_name<<endl;
             return NULL;
         }
         frame_rect.x = frame%num_cols * frame_rect.w;
