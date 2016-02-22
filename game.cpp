@@ -249,7 +249,7 @@ public:
         else if(obj1.type == enum_player or obj2.type == enum_player){
             if(obj1.type != enum_bullet and obj2.type!=enum_bullet){ //bullets spawn in the player's hitbox
                 effect_list.push_back(Effect(explosion, 100, false, 2, player->pos));
-                object_list.erase(object_list.begin());
+                if(player == &object_list.front())  object_list.erase(object_list.begin());
                 dead = true;
             }
             return;
