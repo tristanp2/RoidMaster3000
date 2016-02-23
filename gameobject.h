@@ -70,10 +70,10 @@ public:
         if(scale_surf!=NULL){
             if(scale_surf->refcount==1){
                SDL_FreeSurface(scale_surf);
-               scale_surf=NULL;
             }
-            else scale_surf->refcount++;
+            else scale_surf->refcount--;
         }
+        scale_surf=NULL;
     }
     GameObject(ObjectType type, Sprite* sprite, int scale, Vector2d pos, bool animated, Vector2d v, int rotation, double rotv, int pframe, bool skip_first){
         accel=0;
