@@ -183,7 +183,6 @@ public:
     void delete_objects(){
         for(list<GameObject>::iterator it=object_list.begin(); it!=object_list.end(); ++it){
             if((*it).type!=enum_player and ((*it).pos.x<-150 or (*it).pos.y<-150 or (*it).pos.x>CANVAS_WIDTH + 150 or (*it).pos.y>CANVAS_HEIGHT + 150)){
-               (*it).free_mem();
                it=object_list.erase(it);
             }
         }
@@ -216,8 +215,6 @@ public:
             for(;it2!=object_list.end(); ++it2){
                 if((*it1).is_collided(*it2)){
                     handle_collision(*it1,*it2);
-                    (*it1).free_mem();
-                    (*it2).free_mem();
                     object_list.erase(it2);
                     it1=object_list.erase(it1);
                     break;

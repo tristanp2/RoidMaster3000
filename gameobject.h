@@ -25,6 +25,7 @@ public:
     GameObject(){
         type=enum_misc;
         scale=1;
+        scale_surf=NULL;
     }
     GameObject(const GameObject& other){
         type = other.type;
@@ -57,15 +58,23 @@ public:
 
         if(other.scale_surf==NULL) scale_surf=NULL;
         else{  
-            scale_surf=SDL_CreateRGBSurface(0,draw_rect.w,draw_rect.h,32,0,0,0,0);
-            SDL_SetColorKey(scale_surf, SDL_TRUE, SDL_MapRGB(scale_surf->format,0,0xff,0xa1)); 
-            SDL_SetSurfaceBlendMode(scale_surf, SDL_BLENDMODE_NONE);
-            SDL_BlitSurface(other.scale_surf,NULL,scale_surf,NULL);
+            scale_surf=other.scale_surf;
+            scale_surf->refcount++;
+        }
+
+    }
+    ~GameObject(){
+        free_mem();
+    }
+    void free_mem(){
+        if(scale_surf!=NULL){
+            if(scale_surf->refcount==1){
+               SDL_FreeSurface(scale_surf);
+               scale_surf=NULL;
+            }
+            else scale_surf->refcount++;
         }
     }
-   /* ~GameObject(){
-        free_mem();
-    }*/
     GameObject(ObjectType type, Sprite* sprite, int scale, Vector2d pos, bool animated, Vector2d v, int rotation, double rotv, int pframe, bool skip_first){
         accel=0;
         raccel=0;
@@ -95,6 +104,7 @@ public:
         hit_box = HitBox(rotation, 4, p, draw_rect.h/2);     //basically just a placeholder hitbox 
 
         scale_surf=SDL_CreateRGBSurface(0,draw_rect.w,draw_rect.h,32,0,0,0,0);
+        scale_surf->refcount++;
         SDL_SetColorKey(scale_surf, SDL_TRUE, SDL_MapRGB(scale_surf->format,0,0xff,0xa1)); 
         SDL_SetSurfaceBlendMode(scale_surf, SDL_BLENDMODE_NONE);
     }
@@ -129,10 +139,6 @@ public:
         direction.x = cos(rotation*M_PI/180);
         direction.y = sin(rotation*M_PI/180);
         hit_box.update(rotation, (int)pos.x, (int)pos.y);
-        /*if(type==enum_bullet){
-            cout<<"                      ";
-            cout<<"\r"<<hit_box.draw_center.x<<","<<hit_box.draw_center.y;
-        }*/
         velocity += accel*delta_s*direction;
         pos += velocity*delta_s;
         draw_rect.x = pos.x - draw_rect.w/2;
@@ -145,12 +151,6 @@ public:
     }       
     int get_frame(){
         return current_frame;
-    }
-    void free_mem(){
-        if(scale_surf!=NULL){
-            SDL_FreeSurface(scale_surf);
-            scale_surf = NULL;
-        }
     }
     HitBox get_hitbox(){
         return hit_box;
