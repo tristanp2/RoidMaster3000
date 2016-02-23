@@ -99,8 +99,6 @@ public:
         object_list.front().make_hitbox(3);
         player=&(object_list.front());
         dead = false;
-        ast = GameObject(enum_asteroid,asteroid,3,Vector2d(100,300),true,Vector2d(0,0),0,360,0,false);
-        object_list.push_back(ast);
     }
     GameState frame_loop(SDL_Renderer* r, SDL_Window* window){
         init_game();
@@ -156,7 +154,6 @@ public:
     }
     void draw_objects(SDL_Renderer *r, SDL_Window *w){
         SDL_RenderClear(r);
-        GameObject obj;
         list<GameObject>::iterator it=object_list.begin();
         ++it; //skip past player. need to draw on top of bullets
         for(; it!=object_list.end(); ++it){

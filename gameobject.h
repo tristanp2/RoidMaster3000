@@ -55,7 +55,6 @@ public:
         draw_rect = other.draw_rect;
         offset_pos = other.offset_pos;
         skip_first = other.skip_first;
-
         if(other.scale_surf==NULL) scale_surf=NULL;
         else{  
             scale_surf=other.scale_surf;
@@ -65,15 +64,18 @@ public:
     }
     ~GameObject(){
         free_mem();
+        //if(center!=NULL)    delete center;
+        cout<<file_name<<" has been destroyed"<<endl;
     }
     void free_mem(){
         if(scale_surf!=NULL){
             if(scale_surf->refcount==1){
+               cout<<"refcount is 1. deleting...\n";
                SDL_FreeSurface(scale_surf);
             }
             else scale_surf->refcount--;
         }
-        scale_surf=NULL;
+        scale_surf = NULL;
     }
     GameObject(ObjectType type, Sprite* sprite, int scale, Vector2d pos, bool animated, Vector2d v, int rotation, double rotv, int pframe, bool skip_first){
         accel=0;
@@ -159,9 +161,12 @@ public:
         HitBox other_box = other.get_hitbox();
         SDL_Point* other_point = other_box.get_points();
         for(int i=0; i<other_box.num_points; i++){
-            if(hit_box.is_in_box(other_point[i]))
+            if(hit_box.is_in_box(other_point[i])){
+                delete[] other_point;
                 return true;
+            }
         }
+        delete[] other_point;
         return false;
     }
     //This point is used only for rotations

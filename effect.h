@@ -29,8 +29,29 @@ public:
         SDL_SetColorKey(scale_surf, SDL_TRUE, SDL_MapRGB(scale_surf->format,0,0xff,0xa1)); 
         SDL_SetSurfaceBlendMode(scale_surf, SDL_BLENDMODE_NONE);
     }
+    Effect(const Effect& other){
+        done = other.done;
+        pos = other.pos;
+        loop = other.loop;
+        delta_t = other.delta_t;
+        ms_per_frame = other.ms_per_frame;
+        sprite = other.sprite;
+        draw_rect = other.draw_rect;
+        scale_surf = scale_surf;
+        if(scale_surf != NULL) scale_surf->refcount++;
+    }
+    ~Effect(){
+        free_mem();
+    }
+        
     void free_mem(){
-        SDL_FreeSurface(scale_surf);
+        if(scale_surf!=NULL){
+            if(scale_surf->refcount == 1){
+                SDL_FreeSurface(scale_surf);
+            }
+            else scale_surf->refcount--;
+        }
+        scale_surf = NULL;
     }
     void update(int delta_ms){
         delta_t += delta_ms;

@@ -11,6 +11,8 @@ class HitBox{
 public:
     int num_points;
     HitBox(){
+        base_point=NULL;
+        rot_point=NULL;
     } 
     //Dist represents distance points are from center
     //If num_points == 0, then hitbox is a circle
@@ -24,10 +26,47 @@ public:
         gen_points();
         do_rotation(rotation);
     }
-/*    ~HitBox(){
-        delete base_point;
-        delete rot_point;
-    }*/
+    HitBox(const HitBox& other){
+        current_rotation = other.current_rotation;
+        num_points = other.num_points;
+        dist = other.dist;
+        draw_center = other.draw_center;
+        if(other.base_point!=NULL){
+            base_point = new SDL_Point[num_points];
+            for(int i=0;i<num_points;i++) base_point[i] = other.base_point[i];
+        }
+        else base_point = NULL;
+
+        if(other.rot_point!=NULL){
+            rot_point = new SDL_Point[num_points];
+            for(int i=0;i<num_points;i++) rot_point[i] = other.rot_point[i];
+        }
+        else rot_point = NULL;
+    }
+
+    HitBox& operator=(const HitBox& other){
+        current_rotation = other.current_rotation;
+        num_points = other.num_points;
+        dist = other.dist;
+        draw_center = other.draw_center;
+        if(other.base_point!=NULL){
+            base_point = new SDL_Point[num_points];
+            for(int i=0;i<num_points;i++) base_point[i] = other.base_point[i];
+        }
+        else base_point = NULL;
+
+        if(other.rot_point!=NULL){
+            rot_point = new SDL_Point[num_points];
+            for(int i=0;i<num_points;i++) rot_point[i] = other.rot_point[i];
+        }
+        else rot_point = NULL;
+        return *this;
+    }
+
+    ~HitBox(){
+        if(base_point!=NULL)    delete[] base_point;
+        if(rot_point!=NULL) delete[] rot_point;
+    }
     SDL_Point* get_points(){
         if(num_points == 0) return NULL;         //Shouldn't be asking for the points on a circle
 
@@ -44,7 +83,6 @@ public:
             double distance = sqrt(p2.x*p2.x + p2.y*p2.y);
             if(distance <= dist)
                 return true;
-            else return false;
         }
         SDL_Point* point=this->get_points();
        
@@ -58,6 +96,7 @@ public:
                      (point[j].y-point[i].y) + point[i].x))
                 c = !c;
         }
+        delete[] point;
         return c;
     }
     void update(int rotation, int x, int y){
