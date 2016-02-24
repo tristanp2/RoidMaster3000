@@ -2,6 +2,7 @@
 #define GAME_OBJECT_H
 
 #include <SDL2/SDL.h>
+#include <algorithm>
 
 #include "sprite.h"
 #include "hitbox.h"
@@ -62,15 +63,49 @@ public:
         }
 
     }
+    GameObject& operator= (const GameObject& other){
+        free_mem(); //Everything is being overwritten so might as well free surfaces
+        type = other.type;
+        direction = other.direction;
+        velocity = other.velocity;
+        accel = other.accel;
+        raccel = other.raccel;
+        pos = other.pos;
+        last_pos = other.last_pos;
+        rotation = other.rotation;
+        file_name = other.file_name;
+        rspeed = other.rspeed;
+        animated = other.animated;
+        scale = other.scale;
+        sprite = other.sprite;
+        hit_box = other.hit_box;
+        if(other.center==NULL) center = other.center;
+        else{
+            center = new SDL_Point;
+            center->x = other.center->x;
+            center->y = other.center->y;
+        }
+        frame_dt = other.frame_dt;
+        current_frame = other.current_frame;
+        ms_per_frame = other.ms_per_frame;
+        max_speed = other.max_speed;
+        draw_rect = other.draw_rect;
+        offset_pos = other.offset_pos;
+        skip_first = other.skip_first;
+        if(other.scale_surf==NULL) scale_surf=NULL;
+        else{  
+            scale_surf=other.scale_surf;
+            scale_surf->refcount++;
+        }
+        return  *this; 
+    }
     ~GameObject(){
         free_mem();
         //if(center!=NULL)    delete center;
-        cout<<file_name<<" has been destroyed"<<endl;
     }
     void free_mem(){
         if(scale_surf!=NULL){
             if(scale_surf->refcount==1){
-               cout<<"refcount is 1. deleting...\n";
                SDL_FreeSurface(scale_surf);
             }
             else scale_surf->refcount--;
@@ -110,10 +145,23 @@ public:
         SDL_SetColorKey(scale_surf, SDL_TRUE, SDL_MapRGB(scale_surf->format,0,0xff,0xa1)); 
         SDL_SetSurfaceBlendMode(scale_surf, SDL_BLENDMODE_NONE);
     }
-    void make_hitbox(int num_points){
-        SDL_Point p = {(int)pos.x, (int)pos.y};
 
-        hit_box = HitBox(rotation, num_points, p, draw_rect.h/2);
+    void make_hitbox(SDL_Point* point, int num_points){
+        SDL_Point* hit_point = new SDL_Point[num_points];
+        SDL_Point p;
+        if(center == NULL){
+            p.x = draw_rect.w/2;
+            p.y = draw_rect.h/2;
+        }
+        else{
+            p.x = center->x;
+            p.y = center->y;
+        }
+        for(int i=0;i<num_points;i++){
+            hit_point[i].x = scale * point[i].x - p.x;
+            hit_point[i].y = scale * point[i].y - p.y;
+        }
+        hit_box = HitBox(rotation, num_points, p, hit_point);
     }
     void draw(SDL_Renderer* r, SDL_Window* window){
         SDL_BlitScaled((*sprite)[current_frame],NULL,scale_surf,NULL); 
@@ -177,11 +225,6 @@ public:
         center->x = x * scale;
         center->y = y * scale;
     }
-/*    GameObject operator= (GameObject other){
-        GameObject obj(other);
-        return obj;
-    }
-*/
 private:
     Sprite* sprite;
     HitBox hit_box;

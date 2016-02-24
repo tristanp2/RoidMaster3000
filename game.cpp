@@ -23,10 +23,17 @@ public:
     GameObject *player,ast;
     list<GameObject> object_list;
     list<Effect> effect_list;
+    SDL_Point ship_box[3];
     Sprite *alien, *asteroid, *player_surf, *bullet, *start, *quit, *explosion;
     GameCanvas(){
         srand(time(NULL));
         load_resources();
+        ship_box[0].x = 7;
+        ship_box[0].y = 0;
+        ship_box[1].x = 7;
+        ship_box[1].y = 16;
+        ship_box[2].x = 26;
+        ship_box[2].y = 8;
     }
     ~GameCanvas(){
         object_list.clear(); 
@@ -34,6 +41,9 @@ public:
         delete asteroid;
         delete player_surf;
         delete bullet;
+        delete explosion;
+        delete quit;
+        delete start;
     }
             
     void load_resources(){
@@ -53,7 +63,6 @@ public:
         object_list.push_back(GameObject(enum_misc, quit, 2, Vector2d(400,400), false, Vector2d(0,0), 0,0,0, false));
         button[1] = &(object_list.back());
         int index = 0;
-        cout<<"size: "<<object_list.size()<<endl;
 
         while(1){
             draw_objects(r,window);
@@ -90,13 +99,12 @@ public:
                 }
             }
         }
-        
     }
     void init_game(){
         object_list.clear();
         object_list.push_back(GameObject(enum_player, player_surf, 2, Vector2d(400,300), false, Vector2d(0,0), 180,0, 60, true));
         object_list.front().set_center(14,8);
-        object_list.front().make_hitbox(3);
+        object_list.front().make_hitbox(ship_box,3);
         player=&(object_list.front());
         dead = false;
     }
@@ -108,17 +116,18 @@ public:
         unsigned int last_frame = SDL_GetTicks();
         unsigned int delta_spawn=0;
         unsigned int frame_t=17;
+        score=0;
         while(1){
             unsigned int current_frame=SDL_GetTicks();
             unsigned int delta_t=current_frame - last_frame;
-      //      cout<<"\t"<<object_list.size()<<endl;
-            if(dead and effect_list.front().done){
+            score += delta_t;
+            spawn_rate = score/10000 + 1;
+            if(dead and effect_list.empty()){
                 object_list.clear();
-                effect_list.clear();
                 dead = false;
+                cout<<"Your score was: "<<score/1000<<endl<<"Congratulations, RoidMaster\n";
                 return enum_dead;
             }
-            //cout<<dead<<endl;
             refire+=delta_t;
             delta_spawn+=delta_t;
             frame_t+=delta_t;
@@ -130,8 +139,8 @@ public:
                 frame_t=0;
             }
             delete_objects();
-            if(!dead)  check_collisions();
-            //delta_spawn=spawn_objects(delta_spawn);
+            check_collisions();
+            delta_spawn=spawn_objects(delta_spawn);
             SDL_Event e;
             while(SDL_PollEvent(&e)){
                 switch(e.type){
@@ -179,15 +188,20 @@ public:
     //Delete the objects that have gone out of the screen
     void delete_objects(){
         for(list<GameObject>::iterator it=object_list.begin(); it!=object_list.end(); ++it){
-            if((*it).type!=enum_player and ((*it).pos.x<-150 or (*it).pos.y<-150 or (*it).pos.x>CANVAS_WIDTH + 150 or (*it).pos.y>CANVAS_HEIGHT + 150)){
-               it=object_list.erase(it);
+            if((*it).pos.x<-150 or (*it).pos.y<-150 or (*it).pos.x>CANVAS_WIDTH + 150 or (*it).pos.y>CANVAS_HEIGHT + 150){
+               if((*it).type == enum_player) dead=true;
+               else it=object_list.erase(it);
             }
+        }
+        for(list<Effect>::iterator it=effect_list.begin(); it!=effect_list.end(); ++it){
+            if((*it).done)
+                it = effect_list.erase(it);
         }
     }
     int spawn_objects(int dt){
         if(dt>respawn){
             GameObject obj;
-            int rv=rand()%60+20;
+            int rv=rand()%121+20;
             int sidex=rand()%2;
             int x=-100*sidex + 900*abs(sidex-1); //x coord for asteroid spawn. either spawns at -100 or +900 (100 pixels outside of the screen)
             int y=rand()%600;   //y coord for asteroid spawn
@@ -198,7 +212,7 @@ public:
             dir=dir.unit_vector();
             obj=GameObject(enum_asteroid,asteroid,rand()%3 + 1,pos,true,rv*dir,0,rand()%180 - 360,0,false);
             object_list.push_back(obj);
-            respawn = 1000 + rand()%4000; //Spawn every 1-5 seconds
+            respawn = 500 + rand()%5000/spawn_rate; 
             return 0;
         }    
         else return dt;
@@ -248,7 +262,6 @@ public:
         else if(obj1.type == enum_player or obj2.type == enum_player){
             if(obj1.type != enum_bullet and obj2.type!=enum_bullet){ //bullets spawn in the player's hitbox
                 effect_list.push_back(Effect(explosion, 100, false, 3, player->pos));
-               // if(player == &object_list.front())  object_list.erase(object_list.begin());
                 dead = true;
             }
             return;
@@ -262,15 +275,17 @@ public:
             angle_deg = (i*360/num_objects + rand()%45)%360;
             angle_rad = angle_deg*M_PI/180;
             new_dir = Vector2d(cos(angle_rad),sin(angle_rad));
-            new_pos = new_scale*30*new_dir + old_pos;
-            object_list.push_back(GameObject(enum_asteroid,asteroid,new_scale,new_pos,false,(rand()%121 - 20)*new_dir,angle_deg,rand()%81 - 40,0,false));
+            new_pos = new_scale*15*new_dir + old_pos;
+            object_list.push_back(GameObject(enum_asteroid,asteroid,new_scale,new_pos,false,(rand()%121 + 20)*new_dir,angle_deg,rand()%180 -360,0,false));
         }
+        effect_list.push_back(Effect(explosion, 100, false, new_scale + 1, old_pos));
     }
         
 private:
     int respawn;
     bool firing,dead;
     int refire;
+    unsigned int score, spawn_rate;
     static const int fire_rate=200;    //ms/bullet
     void handle_key_down(SDL_Keycode key){
         if(key == SDLK_RIGHT){

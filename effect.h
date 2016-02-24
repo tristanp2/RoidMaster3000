@@ -33,12 +33,27 @@ public:
         done = other.done;
         pos = other.pos;
         loop = other.loop;
+        current_frame = other.current_frame;
         delta_t = other.delta_t;
         ms_per_frame = other.ms_per_frame;
         sprite = other.sprite;
         draw_rect = other.draw_rect;
-        scale_surf = scale_surf;
+        scale_surf = other.scale_surf;
         if(scale_surf != NULL) scale_surf->refcount++;
+    }
+    Effect& operator=(const Effect& other){
+        done = other.done;
+        pos = other.pos;
+        loop = other.loop;
+        current_frame = other.current_frame;
+        delta_t = other.delta_t;
+        ms_per_frame = other.ms_per_frame;
+        sprite = other.sprite;
+        draw_rect = other.draw_rect;
+        scale_surf = other.scale_surf;
+        if(scale_surf != NULL) scale_surf->refcount++;
+
+        return *this;
     }
     ~Effect(){
         free_mem();

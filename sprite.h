@@ -83,7 +83,6 @@ public:
         }
         frame_rect.x = frame%num_cols * frame_rect.w;
         frame_rect.y = frame/num_cols * frame_rect.h;
-        //cout<<"frame rect: "<<frame_rect.x<<"\t"<<frame_rect.y<<endl;
         SDL_BlitSurface(full_surf, &frame_rect, frame_surf, NULL);
         current_frame = frame;
         return frame_surf;

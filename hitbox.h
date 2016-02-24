@@ -26,6 +26,15 @@ public:
         gen_points();
         do_rotation(rotation);
     }
+    HitBox(int rotation, int num_points, SDL_Point draw_center, SDL_Point* point){
+        this->current_rotation = 0;
+        this->num_points = num_points;
+        this->dist = dist;
+        this->draw_center=draw_center;
+        base_point = point;
+        rot_point = NULL;
+        do_rotation(rotation);
+    }
     HitBox(const HitBox& other){
         current_rotation = other.current_rotation;
         num_points = other.num_points;
@@ -49,23 +58,36 @@ public:
         num_points = other.num_points;
         dist = other.dist;
         draw_center = other.draw_center;
+
+        if(base_point!=NULL){
+            delete[] base_point;  
+            base_point = NULL;
+        }
+        if(rot_point!=NULL){
+            delete[] rot_point;  
+            rot_point = NULL;
+        }
+
         if(other.base_point!=NULL){
             base_point = new SDL_Point[num_points];
             for(int i=0;i<num_points;i++) base_point[i] = other.base_point[i];
         }
-        else base_point = NULL;
 
         if(other.rot_point!=NULL){
             rot_point = new SDL_Point[num_points];
             for(int i=0;i<num_points;i++) rot_point[i] = other.rot_point[i];
         }
-        else rot_point = NULL;
+
         return *this;
     }
 
     ~HitBox(){
-        if(base_point!=NULL)    delete[] base_point;
-        if(rot_point!=NULL) delete[] rot_point;
+        if(base_point!=NULL){
+            delete[] base_point;
+        }
+        if(rot_point!=NULL){
+            delete[] rot_point;
+        }
     }
     SDL_Point* get_points(){
         if(num_points == 0) return NULL;         //Shouldn't be asking for the points on a circle
