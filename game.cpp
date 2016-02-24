@@ -9,6 +9,7 @@
 #include "gameobject.h"
 #include "sprite.h"
 #include "effect.h"
+#include "background.h"
 
 using namespace std;
 
@@ -21,13 +22,15 @@ public:
     static const int CANVAS_WIDTH=800;
     static const int CANVAS_HEIGHT=600;
     GameObject *player,ast;
+    BackGround background;
     list<GameObject> object_list;
     list<Effect> effect_list;
     SDL_Point ship_box[3];
-    Sprite *alien, *asteroid, *player_surf, *bullet, *start, *quit, *explosion;
+    Sprite *alien, *asteroid, *player_surf, *bullet, *start, *quit, *explosion, *tiles;
     GameCanvas(){
         srand(time(NULL));
         load_resources();
+        background = BackGround(tiles, true, WINDOW_WIDTH, WINDOW_HEIGHT);
         ship_box[0].x = 7;
         ship_box[0].y = 0;
         ship_box[1].x = 7;
@@ -54,6 +57,7 @@ public:
         start = new Sprite("./resources/startbutton.bmp", 1,2,1);
         quit = new Sprite("./resources/quitbutton.bmp", 1,2,1);
         explosion = new Sprite("./resources/explosion.bmp", 6,7,1);
+        tiles = new Sprite("./resources/backtile.bmp", 7, 8, 1);
     }
 
     GameState show_menu(SDL_Renderer* r, SDL_Window* window){
@@ -122,7 +126,7 @@ public:
             unsigned int delta_t=current_frame - last_frame;
             score += delta_t;
             spawn_rate = score/10000 + 1;
-            if(dead and effect_list.empty()){
+            if(dead and effect_list.front().done){
                 object_list.clear();
                 dead = false;
                 cout<<"Your score was: "<<score/1000<<endl<<"Congratulations, RoidMaster\n";
@@ -163,6 +167,7 @@ public:
     }
     void draw_objects(SDL_Renderer *r, SDL_Window *w){
         SDL_RenderClear(r);
+        background.draw(r);
         list<GameObject>::iterator it=object_list.begin();
         ++it; //skip past player. need to draw on top of bullets
         for(; it!=object_list.end(); ++it){
@@ -206,7 +211,7 @@ public:
             int x=-100*sidex + 900*abs(sidex-1); //x coord for asteroid spawn. either spawns at -100 or +900 (100 pixels outside of the screen)
             int y=rand()%600;   //y coord for asteroid spawn
             Vector2d pos(x,y);
-            Vector2d end_point(300,rand()%400+100); //Get some random point from center x of screen so that the asteroids
+            Vector2d end_point(300,rand()%400+100); //Get some random point from center x of screen so
                                                     //to set up vector for asteroid direction
             Vector2d dir = end_point - pos;
             dir=dir.unit_vector();
@@ -261,7 +266,7 @@ public:
         }
         else if(obj1.type == enum_player or obj2.type == enum_player){
             if(obj1.type != enum_bullet and obj2.type!=enum_bullet){ //bullets spawn in the player's hitbox
-                effect_list.push_back(Effect(explosion, 100, false, 3, player->pos));
+                effect_list.push_front(Effect(explosion, 100, false, 3, player->pos));
                 dead = true;
             }
             return;
@@ -275,7 +280,7 @@ public:
             angle_deg = (i*360/num_objects + rand()%45)%360;
             angle_rad = angle_deg*M_PI/180;
             new_dir = Vector2d(cos(angle_rad),sin(angle_rad));
-            new_pos = new_scale*15*new_dir + old_pos;
+            new_pos = new_scale*10*new_dir + old_pos;
             object_list.push_back(GameObject(enum_asteroid,asteroid,new_scale,new_pos,false,(rand()%121 + 20)*new_dir,angle_deg,rand()%180 -360,0,false));
         }
         effect_list.push_back(Effect(explosion, 100, false, new_scale + 1, old_pos));
@@ -320,7 +325,7 @@ private:
     }
     //Move to a ship class at some point
     void fire_bullet(){
-        GameObject obj(enum_bullet,bullet,2,player->pos + player->direction*50,
+        GameObject obj(enum_bullet,bullet,2,player->pos + player->direction*30,
                 true,350*player->direction,player->rotation,0,100,false);
         object_list.push_back(obj); 
         refire=0;

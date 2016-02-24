@@ -1,6 +1,7 @@
 #ifndef EFFECT_H
 #define EFFECT_H
 
+#include <SDL2/SDL.h>
 #include "sprite.h"
 
 using namespace std;
