@@ -285,7 +285,7 @@ public:
             angle_deg = (i*360/num_objects + rand()%45)%360;
             angle_rad = angle_deg*M_PI/180;
             new_dir = Vector2d(cos(angle_rad),sin(angle_rad));
-            new_pos = new_scale*10*new_dir + old_pos;
+            new_pos = new_scale*15*new_dir + old_pos;
             object_list.push_back(GameObject(enum_asteroid,asteroid,new_scale,new_pos,false,(rand()%121 + 20)*new_dir,angle_deg,rand()%180 -360,0,false));
         }
         effect_list.push_back(Effect(explosion, 100, false, new_scale + 1, old_pos));
