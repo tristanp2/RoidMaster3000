@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 
 #include "vector2d.h"
+#include "point.h"
 #include "enumeration.h"
 #include "gameobject.h"
 #include "sprite.h"
@@ -25,18 +26,22 @@ public:
     BackGround background;
     list<GameObject> object_list;
     list<Effect> effect_list;
-    SDL_Point ship_box[3];
+    Point ship_box[3], ast_box[7];
     Sprite *alien, *asteroid, *player_surf, *bullet, *start, *quit, *explosion, *tiles;
     GameCanvas(){
         srand(time(NULL));
         load_resources();
         background = BackGround(tiles, true, WINDOW_WIDTH, WINDOW_HEIGHT);
-        ship_box[0].x = 7;
-        ship_box[0].y = 0;
-        ship_box[1].x = 7;
-        ship_box[1].y = 16;
-        ship_box[2].x = 26;
-        ship_box[2].y = 8;
+        ship_box[0] = Point(7,0);
+        ship_box[1] = Point(7,16);
+        ship_box[2] = Point(26,8);
+        ast_box[0] = Point(0,8);
+        ast_box[1] = Point(3,18);
+        ast_box[2] = Point(10,19);
+        ast_box[3] = Point(20,12);
+        ast_box[4] = Point(21,5);
+        ast_box[5] = Point(16,0);
+        ast_box[6] = Point(6,2);
     }
     ~GameCanvas(){
         object_list.clear(); 

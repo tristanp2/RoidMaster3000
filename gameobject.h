@@ -146,7 +146,7 @@ public:
         SDL_SetSurfaceBlendMode(scale_surf, SDL_BLENDMODE_NONE);
     }
 
-    void make_hitbox(SDL_Point* point, int num_points){
+    void make_hitbox(Point* point, int num_points){
         SDL_Point* hit_point = new SDL_Point[num_points];
         SDL_Point p;
         if(center == NULL){
@@ -158,8 +158,8 @@ public:
             p.y = center->y;
         }
         for(int i=0;i<num_points;i++){
-            hit_point[i].x = scale * point[i].x - p.x;
-            hit_point[i].y = scale * point[i].y - p.y;
+            hit_point[i].x = scale * point[i].get_x() - p.x;
+            hit_point[i].y = scale * point[i].get_y() - p.y;
         }
         hit_box = HitBox(rotation, num_points, p, hit_point);
     }
