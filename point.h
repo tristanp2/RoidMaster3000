@@ -19,6 +19,12 @@ public:
     int get_y(){
         return point.y;
     }
+    void set_x(int x){
+        point.x = x;
+    }
+    void set_y(int y){
+        point.y = y;
+    }
     int operator[] (int i){
         if(i==0)    return point.x;
         if(i==1)    return point.y;
