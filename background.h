@@ -76,8 +76,8 @@ private:
                 for(unsigned int j=0; j<tiles_y; j++){
                     tile_info[i-1][j] = tile_info[i][j];
                     if(i == tiles_x - 1){
-                        tile_info[i][j].index = (abs(offset_x + offset_y)%13) % (tiles->max_frame + 1);
-                        tile_info[i][j].flip = get_flip((abs(offset_x + offset_y)%13)%4);
+                        tile_info[i][j].index = ((int)abs(offset_x + offset_y)%13) % (tiles->max_frame + 1);
+                        tile_info[i][j].flip = get_flip(((int)abs(offset_x + offset_y)%13)%4);
                     }
                 }
             }
@@ -87,8 +87,8 @@ private:
                 for(unsigned int j=0; j<tiles_y; j++){
                     tile_info[i+1][j] = tile_info[i][j];
                     if(i == 0){
-                        tile_info[i][j].index = ((abs(offset_x + offset_y))%13) % (tiles->max_frame + 1);
-                        tile_info[i][j].flip = get_flip((abs(offset_x + offset_y)%13)%4);
+                        tile_info[i][j].index = (((int)abs(offset_x + offset_y))%13) % (tiles->max_frame + 1);
+                        tile_info[i][j].flip = get_flip(((int)abs(offset_x + offset_y)%13)%4);
                     }
                 }
             }
@@ -102,8 +102,8 @@ private:
                 for(unsigned int j=tiles_y-2; j>=0; j++){
                     tile_info[i][j+1] = tile_info[i][j];
                     if(j == 0){
-                        tile_info[i][j].index = (abs(offset_x + offset_y)%13) % (tiles->max_frame + 1);
-                        tile_info[i][j].flip = get_flip((abs(offset_x + offset_y)%13)%4);
+                        tile_info[i][j].index = ((int)abs(offset_x + offset_y)%13) % (tiles->max_frame + 1);
+                        tile_info[i][j].flip = get_flip(((int)abs(offset_x + offset_y)%13)%4);
                     }
                 }
             }
@@ -113,8 +113,8 @@ private:
                 for(unsigned int j=1; j<tiles_y; j++){
                     tile_info[i][j-1] = tile_info[i][j];
                     if(i == tiles_y-1){
-                        tile_info[i][j].index = ((abs(offset_x) + offset_y)%13) % (tiles->max_frame + 1);
-                        tile_info[i][j].flip = get_flip((abs(offset_x + offset_y)%13)%4);
+                        tile_info[i][j].index = (((int)abs(offset_x) + offset_y)%13) % (tiles->max_frame + 1);
+                        tile_info[i][j].flip = get_flip(((int)abs(offset_x + offset_y)%13)%4);
                     }
                 }
             }
